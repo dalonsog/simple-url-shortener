@@ -1,0 +1,13 @@
+services:
+  db:
+    container_name: mongodb
+    image: mongo:8
+    ports:
+      - '27017:27017'
+    volumes:
+      - dbmongo:/data/db
+    env_file: 
+      - .env
+volumes:
+  dbmongo:
+    driver: local
