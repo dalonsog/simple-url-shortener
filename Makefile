@@ -1,4 +1,4 @@
 include .env
 
 local:
-	flask --app api run --debug
+	flask --app urlshortener/api run --debug

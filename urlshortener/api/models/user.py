@@ -1,4 +1,4 @@
-from mongoengine import StringField, DateTimeField, EmailField, Document
+from mongoengine import StringField, DateTimeField, EmailField
 from api.models import db
 from datetime import datetime, timezone
 

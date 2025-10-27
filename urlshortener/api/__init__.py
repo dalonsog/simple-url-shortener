@@ -3,7 +3,7 @@ from api.models import db
 from api.config import Settings
 
 
-def create_app():
+def create_app() -> Flask:
     app = Flask(__name__)
 
     app.config['SECRET_KEY'] = Settings.SECRET_KEY

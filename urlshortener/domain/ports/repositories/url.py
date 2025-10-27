@@ -1,0 +1,35 @@
+from abc import ABC, abstractmethod
+from typing import Optional
+
+from domain.model.url import URL
+
+
+class UrlRepositoryInterface(ABC):
+    def add(self, url: URL) -> None:
+        self._add(url)
+
+    def get_url_by_key(self, url_key: str) -> Optional[URL]:
+        self._get_url_by_key(url_key)
+
+    def get_url_by_user_origin(
+        self,
+        user_id: str,
+        original_url: str
+    ) -> Optional[URL]:
+        self._get_url_by_user_origin(user_id, original_url)
+
+    @abstractmethod
+    def _add(self, url: URL) -> None:
+        return NotImplementedError
+    
+    @abstractmethod
+    def _get_url_by_key(self, url_key: str) -> Optional[URL]:
+        return NotImplementedError
+
+    @abstractmethod
+    def _get_url_by_user_origin(
+        self,
+        user_id: str,
+        original_url: str
+    ) -> Optional[URL]:
+        return NotImplementedError
