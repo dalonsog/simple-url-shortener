@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from domain.model.user import User
+from urlshortener.domain.model.user import User
 
 
 class UserRepositoryInterface(ABC):
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError
+    
     def add(self, user: User) -> None:
         self._add(user)
 

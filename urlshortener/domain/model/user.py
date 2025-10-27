@@ -1,15 +1,13 @@
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pydantic import BaseModel, EmailStr
-from passlib.context import CryptContext
-from domain.model.validators import validate_email
-
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+from urlshortener.domain.model.validators import validate_email
+from bson.objectid import ObjectId
 
 
 @dataclass
 class User:
+    id: ObjectId
     email: str
     password: str
     name: str
@@ -48,7 +46,7 @@ def user_factory(
                 'Mandatory fields "email", "password" and "name" '
                 'cannot be empty'
             )
-
+        
     if not validate_email(email):
         raise ValueError("Wrong email format")
     
@@ -71,9 +69,5 @@ def register_user_factory(
     return RegisterUserInputDto(
         email=email,
         name=name,
-        password=_get_password_hash(password)
+        password=password
     )
-
-
-def _get_password_hash(password: str) -> str:
-    return pwd_context.hash(password)

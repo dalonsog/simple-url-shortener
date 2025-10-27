@@ -1,0 +1,6 @@
+class URLDBOperationError(Exception):
+    ...
+
+
+class UserDBOperationError(Exception):
+    ...

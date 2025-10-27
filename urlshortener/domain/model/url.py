@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, Field, HttpUrl
 from datetime import datetime, timezone
-from domain.model.validators import validate_url
+from urlshortener.domain.model.validators import validate_url
 
 
 @dataclass
@@ -24,9 +24,7 @@ class URL:
 class CreateUrlDto(BaseModel):
     short_url: str
     original_url: HttpUrl
-    clicks: int = 0
     user_id: str
-    created_at: datetime = Field(default_factory=datetime.now(timezone.utc))
 
 
 def url_factory(

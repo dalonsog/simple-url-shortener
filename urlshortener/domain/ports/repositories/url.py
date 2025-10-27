@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from domain.model.url import URL
+from urlshortener.domain.model.url import URL
 
 
 class UrlRepositoryInterface(ABC):
+    @abstractmethod
+    def __init__(self) -> None:
+        raise NotImplementedError
+    
     def add(self, url: URL) -> None:
         self._add(url)
 

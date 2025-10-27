@@ -1,7 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Optional
 
-from domain.model.user import User, RegisterUserInputDto, RegisterUserOutputDto
+from urlshortener.domain.model.user import (
+    User,
+    RegisterUserInputDto,
+    RegisterUserOutputDto
+)
 
 
 class UserServiceInterface(ABC):

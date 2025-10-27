@@ -1,6 +1,5 @@
 from functools import wraps
-from mongoengine import Document, ValidationError
-from flask import g, request, jsonify
+from flask import g, request
 from api.utils.auth import get_token_payload, InvalidTokenError
 
 
