@@ -4,9 +4,9 @@ from flask import (
     jsonify,
     redirect,
     g,
-    request,
-    current_app
+    request
 )
+from url_normalize import url_normalize
 from urlshortener.api.config import Settings
 from urlshortener.api.services.url import UrlService
 from urlshortener.domain.model.url import URL, CreateUrlDto, create_url_factory
@@ -38,6 +38,10 @@ def redirect_url(url: str) -> Response:
 @inject_url_service
 def shorten_url() -> Response:
     original_url = request.json.get('url')
+    if not original_url:
+        return "URL not found in request", 400
+
+    original_url = url_normalize(original_url)
     user_email: str = g.current_user.get('user_email')
     
     url_service: UrlService = g.url_service
