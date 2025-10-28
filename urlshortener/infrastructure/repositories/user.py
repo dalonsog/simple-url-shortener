@@ -10,7 +10,7 @@ from urlshortener.domain.ports.repositories.exceptions import (
 
 class UserRepository(UserRepositoryInterface):
     def __init__(self) -> None:
-        super().__init__()
+        pass
     
     def _add(self, user: User) -> None:
         user_in_db = self._get_user_by_email(user_email=user.email)

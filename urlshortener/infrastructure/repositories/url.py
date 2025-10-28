@@ -9,7 +9,7 @@ from urlshortener.domain.ports.repositories.exceptions import (
 
 class UrlRepository(UrlRepositoryInterface):
     def __init__(self) -> None:
-        super().__init__()
+        pass
     
     def _add(self, url: URL) -> None:
         url_in_db = self._get_url_by_key(url_key=url.short_url)
@@ -48,8 +48,8 @@ class UrlRepository(UrlRepositoryInterface):
         original_url: str
     ) -> Optional[URL]:
         url_db: URLDB = URLDB.objects(
-            original_url=original_url,
-            user_email=user_email
+            user_email=user_email,
+            original_url=original_url
         ).first()
         if url_db:
             return url_factory(

@@ -18,13 +18,13 @@ def create_app() -> Flask:
     ]
     db.init_app(app)
 
-    from api.routes.auth import bp as auth_bp
+    from urlshortener.api.routes.auth import bp as auth_bp
     app.register_blueprint(auth_bp)
     
-    from api.routes.user import bp as user_bp
-    app.register_blueprint(user_bp, url_prefix='/user')
+    from urlshortener.api.routes.user import bp as user_bp
+    app.register_blueprint(user_bp, url_prefix='/users')
     
-    from api.routes.url import bp as url_bp
+    from urlshortener.api.routes.url import bp as url_bp
     app.register_blueprint(url_bp)
 
     return app

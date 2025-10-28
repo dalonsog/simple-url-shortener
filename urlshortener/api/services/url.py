@@ -1,6 +1,6 @@
 import string
 import hashlib
-from time import time
+from random import randint
 from typing import Optional
 from urlshortener.domain.model.url import URL, CreateUrlDto, url_factory
 from urlshortener.domain.ports.services.url import UrlServiceInterface
@@ -12,13 +12,12 @@ _ALPHABET = string.digits + string.ascii_letters
 
 class UrlService(UrlServiceInterface):
     def __init__(self, repository: UrlRepositoryInterface) -> None:
-        super().__init__()
         self._repository = repository
     
     def _create(self, url: CreateUrlDto) -> Optional[URL]:
         new_url = url_factory(
             short_url=url.short_url,
-            original_url=url.original_url,
+            original_url=str(url.original_url),
             user_email=url.user_email
         )
         try:
@@ -50,8 +49,10 @@ class UrlService(UrlServiceInterface):
     
     @staticmethod
     def get_short_url(original_url: str, username: str) -> str:
-        digest = hashlib.md5((original_url + username).encode()).hexdigest()
-        md5_int = int(digest, 16) + int(time())
+        digest = hashlib.md5((
+            original_url + username + str(randint(10000, 50000))
+        ).encode()).hexdigest()
+        md5_int = int(digest, 16)
         return UrlService.to_base62(md5_int)
 
     @staticmethod

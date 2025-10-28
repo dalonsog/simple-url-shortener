@@ -20,7 +20,7 @@ def validate_url(url: str) -> bool:
              "._\\+~#?&//=]*)")
     
     pattern = re.compile(regex)
-    if re.search(pattern, str):
+    if re.search(pattern, url):
         return True
     else:
         return False

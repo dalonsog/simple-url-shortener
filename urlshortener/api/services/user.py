@@ -19,7 +19,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class UserService(UserServiceInterface):
     def __init__(self, repository: UserRepositoryInterface) -> None:
-        super().__init__()
         self._repository = repository
     
     def _create(self, user: RegisterUserInputDto) -> RegisterUserOutputDto:
@@ -51,7 +50,7 @@ class UserService(UserServiceInterface):
     @staticmethod
     def create_access_token(
         data: dict,
-        expires_delta: timedelta = timedelta(minutes=15)
+        expires_delta: timedelta = timedelta(minutes=150)
     ) -> str:
         data_to_encode = data.copy()
         expire = datetime.now(timezone.utc) + expires_delta    

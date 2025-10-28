@@ -1,3 +1,4 @@
+from functools import wraps
 from flask import g, request
 from urlshortener.infrastructure.repositories.user import UserRepository
 from urlshortener.infrastructure.repositories.url import UrlRepository
@@ -6,26 +7,29 @@ from urlshortener.api.services.url import UrlService
 
 
 def inject_user_service(f):
-    def wrapper(*args, **kwargs):
+    @wraps(f)
+    def user_service_wrapper(*args, **kwargs):
         user_service = UserService(UserRepository())
         g.user_service = user_service
         return f(*args, **kwargs)
 
-    return wrapper
+    return user_service_wrapper
 
 
 def inject_url_service(f):
-    def wrapper(*args, **kwargs):
+    @wraps(f)
+    def url_service_wrapper(*args, **kwargs):
         url_service = UrlService(UrlRepository())
         g.url_service = url_service
         return f(*args, **kwargs)
 
-    return wrapper
+    return url_service_wrapper
 
 
 def login_required(f):
     @inject_user_service
-    def wrapper(*args, **kwargs):
+    @wraps(f)
+    def login_wrapper(*args, **kwargs):
         auth_header = request.headers.get('Authorization')
 
         if not auth_header or not auth_header.startswith('Bearer '):
@@ -54,4 +58,4 @@ def login_required(f):
 
         return f(*args, **kwargs)
 
-    return wrapper
+    return login_wrapper

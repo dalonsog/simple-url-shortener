@@ -13,14 +13,14 @@ class UrlRepositoryInterface(ABC):
         self._add(url)
 
     def get_url_by_key(self, url_key: str) -> Optional[URL]:
-        self._get_url_by_key(url_key)
+        return self._get_url_by_key(url_key)
 
     def get_url_by_user_origin(
         self,
         user_email: str,
         original_url: str
     ) -> Optional[URL]:
-        self._get_url_by_user_origin(user_email, original_url)
+        return self._get_url_by_user_origin(user_email, original_url)
 
     def update_url(self, url_key: str, new_url_data: URL) -> None:
         self._update_url(url_key, new_url_data)

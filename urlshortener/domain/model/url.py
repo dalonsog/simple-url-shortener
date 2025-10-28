@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, EmailStr, HttpUrl
+from pydantic import BaseModel
 from datetime import datetime, timezone
 from urlshortener.domain.model.validators import validate_url, validate_email
 
@@ -23,8 +23,8 @@ class URL:
 
 class CreateUrlDto(BaseModel):
     short_url: str
-    original_url: HttpUrl
-    user_email: EmailStr
+    original_url: str
+    user_email: str
 
 
 def url_factory(
@@ -41,7 +41,7 @@ def url_factory(
                 'Mandatory fields "short_url", "original_url" and '
                 '"user_email" cannot be empty'
             )
-
+    
     if len(short_url) > 6:
         raise ValueError('URL key cannot be longer than 6 characters')
     

@@ -28,10 +28,6 @@ def redirect_url(url: str) -> Response:
     url_in_db: URL = url_service.get_url_by_key(url)
     if url_in_db:
         url_service.increment_url_count(url_in_db.short_url)
-        current_app.logger.info(
-            f'Redirecting to {url_in_db.original_url} - '
-            f'Clicks: {url_in_db.clicks}'
-        )
         return redirect(url_in_db.original_url)
     else:
         return 'URL not found', 404
@@ -49,9 +45,10 @@ def shorten_url() -> Response:
         user_email,
         original_url
     )
+    
     if not url_in_db:
         url_key = UrlService.get_short_url(original_url, user_email)
-        while URL.objects(short_url=url_key):
+        while url_service.get_url_by_key(url_key):
             url_key = UrlService.get_short_url(original_url, user_email)
         new_url: CreateUrlDto = create_url_factory(
             short_url=url_key,
@@ -59,7 +56,7 @@ def shorten_url() -> Response:
             user_email=user_email
         )
         try:
-            url_service.create(new_url)
+            url_in_db = url_service.create(new_url)
         except:
             return "Error creating short url", 500
     

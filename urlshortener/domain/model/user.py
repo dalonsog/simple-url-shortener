@@ -2,12 +2,10 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 from pydantic import BaseModel, EmailStr
 from urlshortener.domain.model.validators import validate_email
-from bson.objectid import ObjectId
 
 
 @dataclass
 class User:
-    id: ObjectId
     email: str
     password: str
     name: str
