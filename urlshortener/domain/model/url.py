@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from pydantic import BaseModel, Field, HttpUrl
+from pydantic import BaseModel, EmailStr, HttpUrl
 from datetime import datetime, timezone
-from urlshortener.domain.model.validators import validate_url
+from urlshortener.domain.model.validators import validate_url, validate_email
 
 
 @dataclass
@@ -9,7 +9,7 @@ class URL:
     short_url: str
     original_url: str
     clicks: int
-    user_id: str
+    user_email: str
     created_at: datetime
 
     def __eq__(self, other: object) -> bool:
@@ -24,21 +24,22 @@ class URL:
 class CreateUrlDto(BaseModel):
     short_url: str
     original_url: HttpUrl
-    user_id: str
+    user_email: EmailStr
 
 
 def url_factory(
     short_url: str,
     original_url: str,
-    user_id: str,
+    user_email: str,
+    clicks: int = 0,
     created_at: datetime = datetime.now(timezone.utc)
 ) -> URL:
     # data validation
-    for field in [short_url, original_url, user_id]:
+    for field in [short_url, original_url, user_email]:
         if not field:
             raise ValueError(
-                'Mandatory fields "email", "password" and "name" '
-                'cannot be empty'
+                'Mandatory fields "short_url", "original_url" and '
+                '"user_email" cannot be empty'
             )
 
     if len(short_url) > 6:
@@ -50,11 +51,14 @@ def url_factory(
     if not validate_url(original_url):
         raise ValueError("Wrong original url format")
     
+    if not validate_email(user_email):
+        raise ValueError("Wrong email format")
+    
     return URL(
         short_url=short_url,
         original_url=original_url,
-        user_id=user_id,
-        clicks=0,
+        user_email=user_email,
+        clicks=clicks,
         created_at=created_at
     )
 
@@ -62,10 +66,10 @@ def url_factory(
 def create_url_factory(
     short_url: str,
     original_url: str,
-    user_id: str
+    user_email: str
 ) -> CreateUrlDto:
     return CreateUrlDto(
         short_url=short_url,
         original_url=original_url,
-        user_id=user_id
+        user_email=user_email
     )

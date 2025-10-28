@@ -1,6 +1,6 @@
 from flask import Flask
-from api.models import db
-from api.config import Settings
+from urlshortener.infrastructure.db import db
+from urlshortener.api.config import Settings
 
 
 def create_app() -> Flask:

@@ -19,7 +19,7 @@ class UrlService(UrlServiceInterface):
         new_url = url_factory(
             short_url=url.short_url,
             original_url=url.original_url,
-            user_id=url.user_id
+            user_email=url.user_email
         )
         try:
             self._repository.add(new_url)
@@ -32,10 +32,21 @@ class UrlService(UrlServiceInterface):
     
     def _get_url_by_user_origin(
         self,
-        user_id: str,
+        user_email: str,
         original_url: str
     ) -> Optional[URL]:
-        return self._repository.get_url_by_user_origin(user_id, original_url)
+        return self._repository.get_url_by_user_origin(user_email, original_url)
+    
+    def _increment_url_count(self, url_key) -> None:
+        current_url_data = self.get_url_by_key(url_key)
+        if not current_url_data:
+            return
+        
+        current_url_data.clicks += 1
+        try:
+            self._repository.update_url(url_key, current_url_data)
+        except:
+            raise
     
     @staticmethod
     def get_short_url(original_url: str, username: str) -> str:

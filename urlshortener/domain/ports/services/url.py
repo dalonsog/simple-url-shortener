@@ -17,10 +17,13 @@ class UrlServiceInterface(ABC):
     
     def get_url_by_user_origin(
         self,
-        user_id: str,
+        user_email: str,
         original_url: str
     ) -> Optional[URL]:
-        return self._get_url_by_user_origin(user_id, original_url)
+        return self._get_url_by_user_origin(user_email, original_url)
+    
+    def increment_url_count(self, url_key: str) -> None:
+        return self._increment_url_count(url_key)
     
     @abstractmethod
     def _create(self, url: CreateUrlDto) -> Optional[URL]:
@@ -33,7 +36,11 @@ class UrlServiceInterface(ABC):
     @abstractmethod
     def _get_url_by_user_origin(
         self,
-        user_id: str,
+        user_email: str,
         original_url: str
     ) -> Optional[URL]:
+        raise NotImplementedError
+    
+    @abstractmethod
+    def _increment_url_count(self, url_key: str) -> None:
         raise NotImplementedError
