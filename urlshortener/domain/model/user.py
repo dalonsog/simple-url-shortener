@@ -38,13 +38,6 @@ def user_factory(
     created_at: datetime = datetime.now(timezone.utc)
 ) -> User:
     # data validation
-    for field in [email, password, name]:
-        if not field:
-            raise ValueError(
-                'Mandatory fields "email", "password" and "name" '
-                'cannot be empty'
-            )
-        
     if not validate_email(email):
         raise ValueError("Wrong email format")
     

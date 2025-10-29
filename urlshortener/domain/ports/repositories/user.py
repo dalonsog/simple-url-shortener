@@ -15,17 +15,10 @@ class UserRepositoryInterface(ABC):
     def get_user_by_email(self, user_email: str) -> Optional[User]:
         return self._get_user_by_email(user_email)
 
-    def get_user_by_id(self, user_id: str) -> Optional[User]:
-        return self._get_user_by_id(user_id)
-
     @abstractmethod
     def _add(self, user: User) -> None:
         return NotImplementedError
     
     @abstractmethod
     def _get_user_by_email(self, user_email: str) -> Optional[User]:
-        return NotImplementedError
-
-    @abstractmethod
-    def _get_user_by_id(self, user_id: str) -> Optional[User]:
         return NotImplementedError

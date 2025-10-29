@@ -1,5 +1,4 @@
 from typing import Optional
-from bson.objectid import ObjectId
 from urlshortener.infrastructure.models.user import UserDB
 from urlshortener.domain.model.user import User, user_factory
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
@@ -30,18 +29,6 @@ class UserRepository(UserRepositoryInterface):
     
     def _get_user_by_email(self, user_email: str) -> Optional[User]:
         user_db: UserDB = UserDB.objects(email=user_email).first()
-        if user_db:
-            return user_factory(
-                email=user_db.email,
-                password=user_db.password,
-                name=user_db.name,
-                created_at=user_db.created_at
-            )
-        else:
-            return None
-
-    def _get_user_by_id(self, user_id: ObjectId) -> Optional[User]:
-        user_db: UserDB = UserDB.objects(id=user_id).first()
         if user_db:
             return user_factory(
                 email=user_db.email,

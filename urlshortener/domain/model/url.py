@@ -35,13 +35,6 @@ def url_factory(
     created_at: datetime = datetime.now(timezone.utc)
 ) -> URL:
     # data validation
-    for field in [short_url, original_url, user_email]:
-        if not field:
-            raise ValueError(
-                'Mandatory fields "short_url", "original_url" and '
-                '"user_email" cannot be empty'
-            )
-    
     if len(short_url) > 6:
         raise ValueError('URL key cannot be longer than 6 characters')
     
