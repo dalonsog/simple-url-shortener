@@ -8,6 +8,16 @@ services:
       - dbmongo:/data/db
     env_file: 
       - .env
+  app:
+    container_name: app
+    build: .
+    restart: always
+    ports:
+      - '5000:5000'
+    depends_on:
+      - db
+    env_file:
+      - .env
 volumes:
   dbmongo:
     driver: local

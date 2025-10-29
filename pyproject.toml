@@ -1,0 +1,29 @@
+[project]
+name = "urlshortener"
+version = "0.1.0"
+description = "A full URL shortener system build on Flask and MongoDB"
+requires-python = ">=3.10"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICEN[CS]E*"]
+dependencies = [
+    "Flask<4.0.0,>=3.1.2",
+    "flask-mongoengine>=1.0.0",
+    "url-normalize>=2.0.0",
+    "bcrypt==4.0.1",
+    "passlib<2.0.0,>=1.7.4",
+    "pydantic[email]>=2.11.7",
+    "PyJWT<3.0.0,>=2.10.1",
+]
+
+[project.optional-dependencies]
+tests = [
+  'pytest>=8.0.0',
+]
+
+[project.urls]
+Repository = "https://github.com/dalonsog/simple-url-shortener"
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"

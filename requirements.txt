@@ -1,3 +1,8 @@
 Flask==3.1.2
 flask-mongoengine @ git+https://github.com/idoshr/flask-mongoengine.git@e244408acf440c4208f7ddcd6e5d819cb472e4da
 url-normalize==2.2.1
+bcrypt==4.0.1
+passlib==1.7.4
+pydantic[email]==2.11.7
+PyJWT==2.10.1
+pytest==8.4.1
