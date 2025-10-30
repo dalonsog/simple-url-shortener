@@ -1,5 +1,5 @@
 from functools import wraps
-from flask import g, request
+from flask import g, request, current_app
 from urlshortener.infrastructure.repositories.user import UserRepository
 from urlshortener.infrastructure.repositories.url import UrlRepository
 from urlshortener.api.services.user import UserService, InvalidTokenError
@@ -30,25 +30,28 @@ def login_required(f):
     @inject_user_service
     @wraps(f)
     def login_wrapper(*args, **kwargs):
-        auth_header = request.headers.get('Authorization')
-
-        if not auth_header or not auth_header.startswith('Bearer '):
-            return {
+        no_auth_error_data = (
+            {
                 'error': 'Authorization error',
                 'data': "Not authenticated"
-            }, 401
+            },
+            401
+        )
+
+        auth_header = request.headers.get('Authorization')
+        if not auth_header or not auth_header.startswith('Bearer '):
+            return no_auth_error_data
         
         token = auth_header[7:]
-
         if not token:
-            return {
-                'error': 'Authorization error',
-                'data': "Not authenticated"
-            }, 401
+            return no_auth_error_data
         
         try:
             user_service: UserService = g.user_service
-            payload = user_service.get_token_payload(token)
+            payload = user_service.get_token_payload(
+                token,
+                current_app.secret_key
+            )
             g.current_user = payload
         except InvalidTokenError:
             return {

@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request, jsonify, g
+from flask import Blueprint, Response, request, jsonify, g, current_app
 from urlshortener.domain.model.user import (
     User,
     RegisterUserInputDto,
@@ -18,14 +18,17 @@ def login() -> Response:
     user_email = request.form.get('username')
     user_pwd = request.form.get('password')
     if not user_email or not user_pwd:
-        return 'Missing or incomplete user data', 400
+        return jsonify({'error': 'Missing or incomplete user data'}), 400
     
     user_service: UserService = g.user_service
     user: User = user_service.get_user_by_email(user_email)
     if not user or not user_service.verify_password(user_pwd, user.password):
-        return jsonify({'error': 'Wrong email/password combination'}), 400
+        return jsonify({'error': 'Wrong email/password combination'}), 401
     
-    token = user_service.create_access_token({'email': user_email})
+    token = user_service.create_access_token(
+        {'email': user_email},
+        current_app.secret_key
+    )
 
     return jsonify({'token': token})
 
@@ -43,6 +46,6 @@ def signup() -> Response:
     try:
         new_user: RegisterUserOutputDto = user_service.create(user_input)
     except:
-        return 'Input email already exists', 409
+        return jsonify({'error': 'Input email already exists'}), 409
     
     return jsonify({'email': new_user.email, 'name': new_user.name}), 201

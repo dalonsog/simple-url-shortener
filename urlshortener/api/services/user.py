@@ -11,7 +11,6 @@ from urlshortener.domain.model.user import (
     user_factory
 )
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
-from urlshortener.api.config import Settings
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -33,9 +32,6 @@ class UserService(UserServiceInterface):
         except:
             raise
     
-    def _get_user_by_id(self, user_id: str) -> Optional[User]:
-        return self._repository.get_user_by_id(user_id)
-    
     def _get_user_by_email(self, user_email: str) -> Optional[User]:
         return self._repository.get_user_by_email(user_email)
     
@@ -50,6 +46,7 @@ class UserService(UserServiceInterface):
     @staticmethod
     def create_access_token(
         data: dict,
+        secret_key: str,
         expires_delta: timedelta = timedelta(minutes=150)
     ) -> str:
         data_to_encode = data.copy()
@@ -57,17 +54,17 @@ class UserService(UserServiceInterface):
         data_to_encode.update({"exp": expire})
         encoded_jwt = jwt.encode(
             data_to_encode,
-            Settings.SECRET_KEY,
+            secret_key,
             algorithm='HS256'
         )
         return encoded_jwt
 
     @staticmethod
-    def get_token_payload(token: str) -> dict:
+    def get_token_payload(token: str, secret_key: str,) -> dict:
         try:
             payload: dict = jwt.decode(
                 token,
-                Settings.SECRET_KEY,
+                secret_key,
                 algorithms=['HS256']
             )
             user_email = payload.get("email")

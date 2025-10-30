@@ -5,3 +5,6 @@ local:
 
 test-local:
 	pytest test -v --disable-warnings
+
+test-integration:
+	pytest test -v --disable-warnings -m integration
