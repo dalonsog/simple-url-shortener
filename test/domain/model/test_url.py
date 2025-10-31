@@ -9,6 +9,7 @@ from urlshortener.domain.model.url import (
 )
 
 
+@pytest.mark.unit
 def test_create_url_valid_parameters():
     url = URL(
         short_url='kUjf3d',
@@ -20,6 +21,7 @@ def test_create_url_valid_parameters():
     assert isinstance(url, URL)
 
 
+@pytest.mark.unit
 def test_create_url_missing_parameter():
     with pytest.raises(TypeError):
         URL(
@@ -30,6 +32,7 @@ def test_create_url_missing_parameter():
         )
 
 
+@pytest.mark.unit
 def test_compare_two_equal_urls():
     url1 = URL(
         short_url='kUjf3d',
@@ -50,6 +53,7 @@ def test_compare_two_equal_urls():
     assert url1 == url2
 
 
+@pytest.mark.unit
 def test_compare_two_different_urls():
     url1 = URL(
         short_url='kUjf3d',
@@ -70,6 +74,7 @@ def test_compare_two_different_urls():
     assert url1 != url2
     
 
+@pytest.mark.unit
 def test_string_representation():
     url = URL(
         short_url='kUjf3d',
@@ -82,6 +87,7 @@ def test_string_representation():
     assert str(url) == 'URL("kUjf3d")'
 
 
+@pytest.mark.unit
 def test_create_url_with_factory_function():
     short_url='kUjf3d'
     original_url='https://www.google.com/'
@@ -105,6 +111,7 @@ def test_create_url_with_factory_function():
     assert url.created_at == created_at
 
 
+@pytest.mark.unit
 def test_create_url_with_factory_function_missing_creation_time():
     short_url='kUjf3d'
     original_url='https://www.google.com/'
@@ -128,6 +135,7 @@ def test_create_url_with_factory_function_missing_creation_time():
     assert isinstance(url.created_at, datetime)
 
 
+@pytest.mark.unit
 def test_create_url_with_factory_function_long_url_key():
     with pytest.raises(ValueError):
         url_factory(
@@ -139,6 +147,7 @@ def test_create_url_with_factory_function_long_url_key():
         )
 
 
+@pytest.mark.unit
 def test_create_user_with_factory_function_long_original_url():
     original_url = (
         'https://www.some.url.com/some/namespace/'
@@ -159,6 +168,7 @@ def test_create_user_with_factory_function_long_original_url():
         )
 
 
+@pytest.mark.unit
 def test_create_url_with_factory_function_wrong_url():
     with pytest.raises(ValueError):
         url_factory(
@@ -170,6 +180,7 @@ def test_create_url_with_factory_function_wrong_url():
         )
 
 
+@pytest.mark.unit
 def test_create_url_with_factory_function_wrong_email():
     with pytest.raises(ValueError):
         url_factory(
@@ -181,6 +192,7 @@ def test_create_url_with_factory_function_wrong_email():
         )
 
 
+@pytest.mark.unit
 def test_create_url_dto():
     data = {
         'short_url': 'kUjf3d',
@@ -192,6 +204,7 @@ def test_create_url_dto():
     assert isinstance(create_url, CreateUrlDto)
 
 
+@pytest.mark.unit
 def test_create_url_dto_with_factory():
     short_url='kUjf3d'
     original_url='https://www.google.com/'

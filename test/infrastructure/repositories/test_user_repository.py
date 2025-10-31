@@ -6,11 +6,13 @@ from urlshortener.domain.ports.repositories.exceptions import (
 )
 
 
+@pytest.mark.unit
 def test_get_user_not_found(fake_user_repository: UserRepositoryInterface):
     user_in_db = fake_user_repository.get_user_by_email('something@domain.com')
     assert user_in_db == None
 
 
+@pytest.mark.unit
 def test_add_valid_user(
     fake_user_repository: UserRepositoryInterface,
     fake_user_object: User
@@ -19,6 +21,7 @@ def test_add_valid_user(
     assert True
 
 
+@pytest.mark.unit
 def test_get_user_in_db(
     fake_user_repository: UserRepositoryInterface,
     fake_user_object: User
@@ -27,6 +30,7 @@ def test_get_user_in_db(
     assert user_in_db == fake_user_object
 
 
+@pytest.mark.unit
 def test_add_duplicated_user(
     fake_user_repository: UserRepositoryInterface,
     fake_user_object: User

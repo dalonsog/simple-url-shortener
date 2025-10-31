@@ -9,6 +9,7 @@ from urlshortener.domain.model.user import (
 )
 
 
+@pytest.mark.unit
 def test_create_user_valid_parameters():
     user = User(
         email='user@domain.com',
@@ -19,6 +20,7 @@ def test_create_user_valid_parameters():
     assert isinstance(user, User)
 
 
+@pytest.mark.unit
 def test_create_user_missing_parameter():
     with pytest.raises(TypeError):
         User(
@@ -28,6 +30,7 @@ def test_create_user_missing_parameter():
         )
 
 
+@pytest.mark.unit
 def test_compare_two_equal_users():
     user1 = User(
         email='user@domain.com',
@@ -46,6 +49,7 @@ def test_compare_two_equal_users():
     assert user1 == user2
 
 
+@pytest.mark.unit
 def test_compare_two_different_users():
     user1 = User(
         email='user@domain.com',
@@ -64,6 +68,7 @@ def test_compare_two_different_users():
     assert user1 != user2
     
 
+@pytest.mark.unit
 def test_string_representation():
     user = User(
         email='user@domain.com',
@@ -75,6 +80,7 @@ def test_string_representation():
     assert str(user) == 'User("user@domain.com")'
 
 
+@pytest.mark.unit
 def test_create_user_with_factory_function():
     email = 'user@domain.com'
     password = 's0m3s3cr3tp4ssw0rd!'
@@ -94,6 +100,7 @@ def test_create_user_with_factory_function():
     assert user.created_at == created_at
 
 
+@pytest.mark.unit
 def test_create_user_with_factory_function_missing_creation_time():
     email = 'user@domain.com'
     password = 's0m3s3cr3tp4ssw0rd!'
@@ -111,6 +118,7 @@ def test_create_user_with_factory_function_missing_creation_time():
     assert isinstance(user.created_at, datetime)
 
 
+@pytest.mark.unit
 def test_create_user_with_factory_function_wrong_email():
     with pytest.raises(ValueError):
         user_factory(
@@ -120,6 +128,7 @@ def test_create_user_with_factory_function_wrong_email():
         )
 
 
+@pytest.mark.unit
 def test_create_user_with_factory_function_long_name():
     with pytest.raises(ValueError):
         user_factory(
@@ -129,6 +138,7 @@ def test_create_user_with_factory_function_long_name():
         )
 
 
+@pytest.mark.unit
 def test_create_register_user_dto():
     data = {
         'email': 'user@domain.com',
@@ -140,6 +150,7 @@ def test_create_register_user_dto():
     assert isinstance(register_user, RegisterUserInputDto)
 
 
+@pytest.mark.unit
 def test_create_register_user_dto_wrong_email_format():
     data = {
         'email': 'userATdomain.com',
@@ -151,6 +162,7 @@ def test_create_register_user_dto_wrong_email_format():
         RegisterUserInputDto(**data)
 
 
+@pytest.mark.unit
 def test_create_register_user_with_factory():
     email = 'user@domain.com'
     password = 's0m3s3cr3tp4ssw0rd!'

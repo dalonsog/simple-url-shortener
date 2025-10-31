@@ -6,11 +6,13 @@ from urlshortener.domain.ports.repositories.exceptions import (
 )
 
 
+@pytest.mark.unit
 def test_get_url_not_found(fake_url_repository: UrlRepositoryInterface):
     url_in_db = fake_url_repository.get_url_by_key('abcdef')
     assert url_in_db == None
 
 
+@pytest.mark.unit
 def test_add_valid_url(
     fake_url_repository: UrlRepositoryInterface,
     fake_url_object: URL
@@ -19,6 +21,7 @@ def test_add_valid_url(
     assert True
 
 
+@pytest.mark.unit
 def test_get_url_in_db(
     fake_url_repository: UrlRepositoryInterface,
     fake_url_object: URL
@@ -27,6 +30,7 @@ def test_get_url_in_db(
     assert url_in_db == fake_url_object
 
 
+@pytest.mark.unit
 def test_add_duplicated_url(
     fake_url_repository: UrlRepositoryInterface,
     fake_url_object: URL
