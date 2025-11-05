@@ -27,9 +27,6 @@ kubernetes-logs-app:
 kubernetes-logs-mongo:
 	kubectl logs deployment/mongo -f
 
-test-all:
-	pytest test -v --disable-warnings
-
 test-unit:
 	pytest test -v --disable-warnings -m unit
 

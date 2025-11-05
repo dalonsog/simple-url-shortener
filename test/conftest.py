@@ -7,14 +7,12 @@ from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.infrastructure.db import db
 from urlshortener.infrastructure.repositories.user import UserRepository
 from urlshortener.infrastructure.repositories.url import UrlRepository
-from urlshortener.api.config import Settings
 from urlshortener.api import register_routes
 
 
 def init_mock_db(app: Flask):
     app.config["MONGODB_SETTINGS"] = [
         {
-            "db": 'mongoenginetest',
             "host": 'mongodb://localhost',
             "mongo_client_class": mongomock.MongoClient
         }
