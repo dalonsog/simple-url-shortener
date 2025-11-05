@@ -45,7 +45,7 @@ def signup() -> Response:
 
     try:
         new_user: RegisterUserOutputDto = user_service.create(user_input)
-    except:
+    except Exception as excpt:
         return jsonify({'error': 'Input email already exists'}), 409
     
     return jsonify({'email': new_user.email, 'name': new_user.name}), 201

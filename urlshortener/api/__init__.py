@@ -21,7 +21,6 @@ def create_app() -> Flask:
     app.config['DOMAIN_NAME'] = Settings.DOMAIN_NAME
     app.config["MONGODB_SETTINGS"] = [
         {
-            "db": Settings.MONGO_DATABASE,
             "host": Settings.MONGO_HOST,
             "port": Settings.MONGO_PORT,
             "username": Settings.MONGO_USERNAME,

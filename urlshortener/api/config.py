@@ -9,4 +9,3 @@ class Settings:
     MONGO_PORT = int(os.getenv('MONGO_PORT', 27017))
     MONGO_USERNAME = os.getenv('MONGO_INITDB_ROOT_USERNAME')
     MONGO_PASSWORD = os.getenv('MONGO_INITDB_ROOT_PASSWORD')
-    MONGO_DATABASE = os.getenv('MONGO_INITDB_DATABASE')

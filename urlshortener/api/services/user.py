@@ -47,7 +47,7 @@ class UserService(UserServiceInterface):
     def create_access_token(
         data: dict,
         secret_key: str,
-        expires_delta: timedelta = timedelta(minutes=150)
+        expires_delta: timedelta = timedelta(minutes=15)
     ) -> str:
         data_to_encode = data.copy()
         expire = datetime.now(timezone.utc) + expires_delta    

@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: url-shortener-service
+  labels:
+    app: url-shortener-app
+spec:
+  type: LoadBalancer
+  selector:
+    app: url-shortener-app
+  ports:
+    - port: 80
+      targetPort: 5000
+      name: web
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: url-shortener
+  labels:
+    app: url-shortener-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: url-shortener-app
+  template:
+    metadata:
+      labels:
+        app: url-shortener-app
+    spec:
+      containers:
+      - name: url-shortener-app
+        image: simple-url-shortener-app:latest
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "250m"
+          limits:
+            memory: "256Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 5000
+          name: web
+        env:
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: url-shortener-secrets
+              key: flask
+        - name: DOMAIN_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: settings
+              key: app.domain_name
+        - name: MONGO_HOST
+          value: mongo-service
+        - name: MONGO_PORT
+          value: "27017"
+        - name: MONGO_INITDB_ROOT_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: settings
+              key: mongo.root_user
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: url-shortener-secrets
+              key: mongo

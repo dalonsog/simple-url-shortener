@@ -54,11 +54,11 @@ def shorten_url() -> Response:
         return jsonify({
             'original_url': original_url,
             'short_url': (
-                f'{current_app.config['DOMAIN_NAME']}/'
+                f'{current_app.config.get("DOMAIN_NAME")}/'
                 f'{url_in_db.short_url}'
             )
         }), 200
-    
+
     url_key = UrlService.get_short_url(original_url, user_email)
     while url_service.get_url_by_key(url_key):
         url_key = UrlService.get_short_url(original_url, user_email)
@@ -75,7 +75,7 @@ def shorten_url() -> Response:
     return jsonify({
         'original_url': original_url,
         'short_url': (
-            f'{current_app.config['DOMAIN_NAME']}/'
+            f'{current_app.config.get("DOMAIN_NAME")}/'
             f'{url_in_db.short_url}'
         )
     }), 201
