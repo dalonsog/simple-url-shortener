@@ -32,3 +32,7 @@ test-unit:
 
 test-integration:
 	pytest test -v --disable-warnings -m integration
+
+test-all:
+	pytest test -v --disable-warnings -m unit
+	pytest test -v --disable-warnings -m integration

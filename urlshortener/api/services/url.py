@@ -11,8 +11,13 @@ _ALPHABET = string.digits + string.ascii_letters
 
 
 class UrlService(UrlServiceInterface):
-    def __init__(self, repository: UrlRepositoryInterface) -> None:
+    def __init__(
+        self,
+        repository: UrlRepositoryInterface,
+        cache: Optional[UrlRepositoryInterface] = None
+    ) -> None:
         self._repository = repository
+        self._cache = cache
     
     def _create(self, url: CreateUrlDto) -> Optional[URL]:
         new_url = url_factory(
@@ -27,8 +32,21 @@ class UrlService(UrlServiceInterface):
             raise
     
     def _get_url_by_key(self, url_key: str) -> Optional[URL]:
-        return self._repository.get_url_by_key(url_key)
-    
+        if not self._cache:
+            
+            return self._repository.get_url_by_key(url_key)
+        
+        url_in_cache = self._cache.get_url_by_key(url_key)
+        if url_in_cache:
+            
+            return url_in_cache
+        
+        url_in_db = self._repository.get_url_by_key(url_key)
+        if url_in_db:
+            self._cache.add(url_in_db)
+        
+        return url_in_db
+
     def _get_url_by_user_origin(
         self,
         user_email: str,
@@ -44,6 +62,8 @@ class UrlService(UrlServiceInterface):
         current_url_data.clicks += 1
         try:
             self._repository.update_url(url_key, current_url_data)
+            if self._cache:
+                self._cache.update_url(url_key, current_url_data)
         except:
             raise
     

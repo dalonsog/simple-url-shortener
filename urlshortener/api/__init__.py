@@ -27,6 +27,11 @@ def create_app() -> Flask:
             "password": Settings.MONGO_PASSWORD
         }
     ]
+    app.config["REDIS_SETTINGS"] = {
+        "host": Settings.REDIS_HOST,
+        "port": Settings.REDIS_PORT,
+        "password": Settings.REDIS_PASSWORD
+    }
     
     db.init_app(app)
 

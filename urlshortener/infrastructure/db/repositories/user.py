@@ -1,5 +1,5 @@
 from typing import Optional
-from urlshortener.infrastructure.models.user import UserDB
+from urlshortener.infrastructure.db.models.user import UserDB
 from urlshortener.domain.model.user import User, user_factory
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
 from urlshortener.domain.ports.repositories.exceptions import (
@@ -12,7 +12,7 @@ class UserRepository(UserRepositoryInterface):
         pass
     
     def _add(self, user: User) -> None:
-        user_in_db = self._get_user_by_email(user_email=user.email)
+        user_in_db = self.get_user_by_email(user_email=user.email)
         if user_in_db:
             raise UserDBOperationError(f'User {user.email} already exists')
         

@@ -1,7 +1,7 @@
 from typing import Optional
 from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.domain.ports.repositories.url import UrlRepositoryInterface
-from urlshortener.infrastructure.models.url import URLDB
+from urlshortener.infrastructure.db.models.url import URLDB
 from urlshortener.domain.ports.repositories.exceptions import (
     URLDBOperationError
 )
@@ -12,7 +12,7 @@ class UrlRepository(UrlRepositoryInterface):
         pass
     
     def _add(self, url: URL) -> None:
-        url_in_db = self._get_url_by_key(url_key=url.short_url)
+        url_in_db = self.get_url_by_key(url_key=url.short_url)
         if url_in_db:
             raise URLDBOperationError(
                 f'URL key {url.short_url} already exists'

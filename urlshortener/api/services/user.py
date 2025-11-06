@@ -17,8 +17,13 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class UserService(UserServiceInterface):
-    def __init__(self, repository: UserRepositoryInterface) -> None:
+    def __init__(
+        self,
+        repository: UserRepositoryInterface,
+        cache: Optional[UserRepositoryInterface] = None
+    ) -> None:
         self._repository = repository
+        self._cache = cache
     
     def _create(self, user: RegisterUserInputDto) -> RegisterUserOutputDto:
         new_user = user_factory(
@@ -33,7 +38,18 @@ class UserService(UserServiceInterface):
             raise
     
     def _get_user_by_email(self, user_email: str) -> Optional[User]:
-        return self._repository.get_user_by_email(user_email)
+        if not self._cache:
+            return self._repository.get_user_by_email(user_email)
+        
+        user_in_cache = self._cache.get_user_by_email(user_email)
+        if user_in_cache:
+            return user_in_cache
+        
+        user_in_db = self._repository.get_user_by_email(user_email)
+        if user_in_db:
+            self._cache.add(user_in_db)
+        
+        return user_in_db
     
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:

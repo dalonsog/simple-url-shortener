@@ -1,7 +1,9 @@
 from functools import wraps
 from flask import g, request, current_app
-from urlshortener.infrastructure.repositories.user import UserRepository
-from urlshortener.infrastructure.repositories.url import UrlRepository
+from urlshortener.infrastructure.db.repositories.user import UserRepository
+from urlshortener.infrastructure.db.repositories.url import UrlRepository
+from urlshortener.infrastructure.cache.repositories.user import UserCache
+from urlshortener.infrastructure.cache.repositories.url import UrlCache
 from urlshortener.api.services.user import UserService, InvalidTokenError
 from urlshortener.api.services.url import UrlService
 
@@ -9,7 +11,15 @@ from urlshortener.api.services.url import UrlService
 def inject_user_service(f):
     @wraps(f)
     def user_service_wrapper(*args, **kwargs):
-        user_service = UserService(UserRepository())
+        if current_app.config.get('REDIS_SETTINGS'):
+            redis_config = current_app.config.get('REDIS_SETTINGS')
+            user_service = UserService(
+                repository=UserRepository(),
+                cache=UserCache(**redis_config)
+            )
+        else:
+            user_service = UserService(UserRepository())
+            
         g.user_service = user_service
         return f(*args, **kwargs)
 
@@ -19,7 +29,15 @@ def inject_user_service(f):
 def inject_url_service(f):
     @wraps(f)
     def url_service_wrapper(*args, **kwargs):
-        url_service = UrlService(UrlRepository())
+        if current_app.config.get('REDIS_SETTINGS'):
+            redis_config = current_app.config.get('REDIS_SETTINGS')
+            url_service = UrlService(
+                repository=UrlRepository(),
+                cache=UrlCache(**redis_config)
+            )
+        else:
+            url_service = UrlService(UrlRepository())
+        
         g.url_service = url_service
         return f(*args, **kwargs)
 

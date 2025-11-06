@@ -5,8 +5,8 @@ from flask.testing import FlaskClient
 from urlshortener.domain.model.user import User, user_factory
 from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.infrastructure.db import db
-from urlshortener.infrastructure.repositories.user import UserRepository
-from urlshortener.infrastructure.repositories.url import UrlRepository
+from urlshortener.infrastructure.db.repositories.user import UserRepository
+from urlshortener.infrastructure.db.repositories.url import UrlRepository
 from urlshortener.api import register_routes
 
 
