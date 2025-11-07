@@ -9,6 +9,9 @@ docker-build:
 docker-run:
 	docker compose up -d
 
+docker-logs:
+	docker compose logs app -f
+
 kubernetes-deploy:
 	kubectl apply -f ./k8s
 

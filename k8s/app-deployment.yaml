@@ -68,3 +68,12 @@ spec:
             secretKeyRef:
               name: url-shortener-secrets
               key: mongo
+        - name: REDIS_HOST
+          value: redis-service
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: url-shortener-secrets
+              key: redis
