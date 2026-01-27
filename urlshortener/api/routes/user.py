@@ -1,7 +1,10 @@
 from flask import Blueprint, Response, jsonify, g
 from urlshortener.domain.model.user import User
-from urlshortener.api.services.user import UserService
-from urlshortener.api.utils.decorators import login_required
+from urlshortener.aplication.services import UserService
+from urlshortener.api.utils.decorators import (
+    inject_user_service,
+    login_required
+)
 
 
 bp = Blueprint('user', __name__)
@@ -9,6 +12,7 @@ bp = Blueprint('user', __name__)
 
 @bp.route('/me', methods=['GET'])
 @login_required
+@inject_user_service
 def get_me() -> Response:
     current_user: dict = g.current_user
     user_service: UserService = g.user_service

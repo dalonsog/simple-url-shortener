@@ -1,6 +1,5 @@
 from abc import ABC, abstractmethod
 from typing import Optional
-
 from urlshortener.domain.model.user import (
     User,
     RegisterUserInputDto,
@@ -10,19 +9,21 @@ from urlshortener.domain.model.user import (
 
 class UserServiceInterface(ABC):
     @abstractmethod
-    def __init__(self) -> None:
+    def create_user(
+        self,
+        user_dto: RegisterUserInputDto
+    ) -> RegisterUserOutputDto:
         raise NotImplementedError
-    
-    def create(self, user: RegisterUserInputDto) -> RegisterUserOutputDto:
-        return self._create(user)
-    
+
+    @abstractmethod
     def get_user_by_email(self, user_email: str) -> Optional[User]:
-        return self._get_user_by_email(user_email)
-    
-    @abstractmethod
-    def _create(self, user: RegisterUserInputDto) -> RegisterUserOutputDto:
         raise NotImplementedError
     
     @abstractmethod
-    def _get_user_by_email(self, user_email: str) -> Optional[User]:
+    def login_user(
+        self,
+        user_email: str,
+        user_pwd: str,
+        secret_key: str
+    ) -> str:
         raise NotImplementedError

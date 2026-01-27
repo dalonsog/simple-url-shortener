@@ -1,46 +1,21 @@
 from abc import ABC, abstractmethod
-from typing import Optional
-
-from urlshortener.domain.model.url import URL, CreateUrlDto
+from typing import Optional, Tuple
+from urlshortener.domain.model.url import URL
 
 
 class UrlServiceInterface(ABC):
     @abstractmethod
-    def __init__(self) -> None:
+    def shorten_url(
+        self,
+        original_url: str,
+        user_email: str
+    ) -> Tuple[URL, bool]:
+        raise NotImplementedError
+
+    @abstractmethod
+    def retrieve_url_and_increment_count(self, url_key: str) -> Optional[URL]:
         raise NotImplementedError
     
-    def create(self, url: CreateUrlDto) -> Optional[URL]:
-        return self._create(url)
-    
+    @abstractmethod
     def get_url_by_key(self, url_key: str) -> Optional[URL]:
-        return self._get_url_by_key(url_key)
-    
-    def get_url_by_user_origin(
-        self,
-        user_email: str,
-        original_url: str
-    ) -> Optional[URL]:
-        return self._get_url_by_user_origin(user_email, original_url)
-    
-    def increment_url_count(self, url_key: str) -> None:
-        return self._increment_url_count(url_key)
-    
-    @abstractmethod
-    def _create(self, url: CreateUrlDto) -> Optional[URL]:
-        raise NotImplementedError
-    
-    @abstractmethod
-    def _get_url_by_key(self, url_key: str) -> Optional[URL]:
-        raise NotImplementedError
-    
-    @abstractmethod
-    def _get_url_by_user_origin(
-        self,
-        user_email: str,
-        original_url: str
-    ) -> Optional[URL]:
-        raise NotImplementedError
-    
-    @abstractmethod
-    def _increment_url_count(self, url_key: str) -> None:
         raise NotImplementedError

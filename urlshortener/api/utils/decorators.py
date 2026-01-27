@@ -1,11 +1,12 @@
 from functools import wraps
 from flask import g, request, current_app
+from jwt.exceptions import InvalidTokenError
 from urlshortener.infrastructure.db.repositories.user import UserRepository
 from urlshortener.infrastructure.db.repositories.url import UrlRepository
 from urlshortener.infrastructure.cache.repositories.user import UserCache
 from urlshortener.infrastructure.cache.repositories.url import UrlCache
-from urlshortener.api.services.user import UserService, InvalidTokenError
-from urlshortener.api.services.url import UrlService
+from urlshortener.aplication.services import UserService
+from urlshortener.aplication.services import UrlService
 
 
 def inject_user_service(f):
@@ -45,7 +46,6 @@ def inject_url_service(f):
 
 
 def login_required(f):
-    @inject_user_service
     @wraps(f)
     def login_wrapper(*args, **kwargs):
         no_auth_error_data = (
@@ -65,8 +65,7 @@ def login_required(f):
             return no_auth_error_data
         
         try:
-            user_service: UserService = g.user_service
-            payload = user_service.get_token_payload(
+            payload = UserService.get_token_payload(
                 token,
                 current_app.secret_key
             )

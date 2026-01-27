@@ -1,10 +1,11 @@
 import string
 import hashlib
 from random import randint
-from typing import Optional
-from urlshortener.domain.model.url import URL, CreateUrlDto, url_factory
-from urlshortener.domain.ports.services.url import UrlServiceInterface
+from typing import Optional, Tuple
+from url_normalize import url_normalize
+from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.domain.ports.repositories.url import UrlRepositoryInterface
+from urlshortener.domain.ports.services.url import UrlServiceInterface
 
 
 _ALPHABET = string.digits + string.ascii_letters
@@ -18,46 +19,41 @@ class UrlService(UrlServiceInterface):
     ) -> None:
         self._repository = repository
         self._cache = cache
-    
-    def _create(self, url: CreateUrlDto) -> Optional[URL]:
-        new_url = url_factory(
-            short_url=url.short_url,
-            original_url=str(url.original_url),
-            user_email=url.user_email
+
+    def shorten_url(
+        self,
+        original_url: str,
+        user_email: str
+    ) -> Tuple[URL, bool]:
+        original_url = url_normalize(original_url)
+        url_in_db = self._repository.get_url_by_user_origin(
+            user_email,
+            original_url
         )
+
+        if url_in_db:
+            return url_in_db, False
+        
+        url_key = UrlService.get_short_url(original_url, user_email)
+        while self.get_url_by_key(url_key):
+            url_key = UrlService.get_short_url(original_url, user_email)
+
+        new_url = url_factory(
+            short_url=url_key,
+            original_url=original_url,
+            user_email=user_email
+        )
+
         try:
             self._repository.add(new_url)
-            return new_url
+            return new_url, True
         except:
             raise
-    
-    def _get_url_by_key(self, url_key: str) -> Optional[URL]:
-        if not self._cache:
-            
-            return self._repository.get_url_by_key(url_key)
-        
-        url_in_cache = self._cache.get_url_by_key(url_key)
-        if url_in_cache:
-            
-            return url_in_cache
-        
-        url_in_db = self._repository.get_url_by_key(url_key)
-        if url_in_db:
-            self._cache.add(url_in_db)
-        
-        return url_in_db
 
-    def _get_url_by_user_origin(
-        self,
-        user_email: str,
-        original_url: str
-    ) -> Optional[URL]:
-        return self._repository.get_url_by_user_origin(user_email, original_url)
-    
-    def _increment_url_count(self, url_key) -> None:
+    def retrieve_url_and_increment_count(self, url_key: str) -> Optional[URL]:
         current_url_data = self.get_url_by_key(url_key)
         if not current_url_data:
-            return
+            return None
         
         current_url_data.clicks += 1
         try:
@@ -66,6 +62,22 @@ class UrlService(UrlServiceInterface):
                 self._cache.update_url(url_key, current_url_data)
         except:
             raise
+
+        return current_url_data
+    
+    def get_url_by_key(self, url_key: str) -> Optional[URL]:
+        if not self._cache:            
+            return self._repository.get_url_by_key(url_key)
+        
+        url_in_cache = self._cache.get_url_by_key(url_key)
+        if url_in_cache:
+            return url_in_cache
+        
+        url_in_db = self._repository.get_url_by_key(url_key)
+        if url_in_db:
+            self._cache.add(url_in_db)
+        
+        return url_in_db
     
     @staticmethod
     def get_short_url(original_url: str, username: str) -> str:

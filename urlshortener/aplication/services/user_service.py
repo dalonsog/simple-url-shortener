@@ -3,7 +3,6 @@ from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from passlib.context import CryptContext
-from urlshortener.domain.ports.services.user import UserServiceInterface
 from urlshortener.domain.model.user import (
     User,
     RegisterUserInputDto,
@@ -11,6 +10,8 @@ from urlshortener.domain.model.user import (
     user_factory
 )
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
+from urlshortener.domain.ports.services.user import UserServiceInterface
+from urlshortener.aplication.exception import NotAuthorizedException
 
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -24,20 +25,23 @@ class UserService(UserServiceInterface):
     ) -> None:
         self._repository = repository
         self._cache = cache
-    
-    def _create(self, user: RegisterUserInputDto) -> RegisterUserOutputDto:
+
+    def create_user(
+        self,
+        user_dto: RegisterUserInputDto
+    ) -> RegisterUserOutputDto:
         new_user = user_factory(
-            email=user.email,
-            password=UserService.get_password_hash(user.password),
-            name=user.name
+            email=user_dto.email,
+            password=UserService.get_password_hash(user_dto.password),
+            name=user_dto.name
         )
         try:
             self._repository.add(new_user)
             return new_user
         except:
             raise
-    
-    def _get_user_by_email(self, user_email: str) -> Optional[User]:
+
+    def get_user_by_email(self, user_email: str) -> Optional[User]:
         if not self._cache:
             return self._repository.get_user_by_email(user_email)
         
@@ -51,6 +55,18 @@ class UserService(UserServiceInterface):
         
         return user_in_db
     
+    def login_user(
+        self,
+        user_email: str,
+        user_pwd: str,
+        secret_key: str
+    ) -> str:
+        user: User = self.get_user_by_email(user_email)
+        if not user or not self.verify_password(user_pwd, user.password):
+            raise NotAuthorizedException()
+        
+        return self.create_access_token({'email': user_email}, secret_key)
+
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         return pwd_context.verify(plain_password, hashed_password)

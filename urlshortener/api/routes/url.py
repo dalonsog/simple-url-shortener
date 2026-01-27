@@ -8,7 +8,7 @@ from flask import (
     current_app
 )
 from url_normalize import url_normalize
-from urlshortener.api.services.url import UrlService
+from urlshortener.aplication.services import UrlService
 from urlshortener.domain.model.url import URL, CreateUrlDto, create_url_factory
 from urlshortener.api.utils.decorators import inject_url_service, login_required
 
@@ -25,9 +25,8 @@ def index() -> Response:
 @inject_url_service
 def redirect_url(url: str) -> Response:
     url_service: UrlService = g.url_service
-    url_in_db: URL = url_service.get_url_by_key(url)
+    url_in_db: URL = url_service.retrieve_url_and_increment_count(url)
     if url_in_db:
-        url_service.increment_url_count(url_in_db.short_url)
         return redirect(url_in_db.original_url)
     else:
         return jsonify({'error': 'URL not found'}), 404
@@ -45,40 +44,17 @@ def shorten_url() -> Response:
     user_email: str = g.current_user.get('user_email')
     
     url_service: UrlService = g.url_service
-    url_in_db: URL = url_service.get_url_by_user_origin(
-        user_email,
-        original_url
-    )
-
-    if url_in_db:
+    try:
+        url_in_db, created = url_service.shorten_url(original_url, user_email)
         return jsonify({
             'original_url': original_url,
             'short_url': (
                 f'{current_app.config.get("DOMAIN_NAME")}/'
                 f'{url_in_db.short_url}'
             )
-        }), 200
-
-    url_key = UrlService.get_short_url(original_url, user_email)
-    while url_service.get_url_by_key(url_key):
-        url_key = UrlService.get_short_url(original_url, user_email)
-    new_url: CreateUrlDto = create_url_factory(
-        short_url=url_key,
-        original_url=original_url,
-        user_email=user_email
-    )
-    try:
-        url_in_db = url_service.create(new_url)
+        }), 201 if created else 200
     except:
         return jsonify({'error': 'Error creating short url'}), 500
-    
-    return jsonify({
-        'original_url': original_url,
-        'short_url': (
-            f'{current_app.config.get("DOMAIN_NAME")}/'
-            f'{url_in_db.short_url}'
-        )
-    }), 201
 
 
 @bp.route('/inspect/<string:url>', methods=['GET'])

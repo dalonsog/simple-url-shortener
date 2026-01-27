@@ -5,7 +5,8 @@ from urlshortener.domain.model.user import (
     RegisterUserOutputDto,
     register_user_factory
 )
-from urlshortener.api.services.user import UserService
+from urlshortener.aplication.services import UserService
+from urlshortener.aplication.exception import NotAuthorizedException
 from urlshortener.api.utils.decorators import inject_user_service
 
 
@@ -21,31 +22,30 @@ def login() -> Response:
         return jsonify({'error': 'Missing or incomplete user data'}), 400
     
     user_service: UserService = g.user_service
-    user: User = user_service.get_user_by_email(user_email)
-    if not user or not user_service.verify_password(user_pwd, user.password):
+    try:
+        token = user_service.login_user(
+            user_email=user_email,
+            user_pwd=user_pwd,
+            secret_key=current_app.secret_key
+        )
+        return jsonify({'token': token})
+    except NotAuthorizedException:
         return jsonify({'error': 'Wrong email/password combination'}), 401
     
-    token = user_service.create_access_token(
-        {'email': user_email},
-        current_app.secret_key
-    )
-
-    return jsonify({'token': token})
-
 
 @bp.route('/signup', methods=['POST'])
 @inject_user_service
 def signup() -> Response:
     user_data: dict = request.json
-    user_service: UserService = g.user_service
     try:
         user_input: RegisterUserInputDto = register_user_factory(**user_data)
     except:
         return jsonify({'error': 'Missing or incomplete user data'}), 400
 
+    user_service: UserService = g.user_service
     try:
-        new_user: RegisterUserOutputDto = user_service.create(user_input)
-    except Exception as excpt:
+        new_user: RegisterUserOutputDto = user_service.create_user(user_input)
+    except Exception:
         return jsonify({'error': 'Input email already exists'}), 409
     
     return jsonify({'email': new_user.email, 'name': new_user.name}), 201
