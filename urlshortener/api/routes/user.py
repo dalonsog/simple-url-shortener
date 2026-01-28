@@ -1,6 +1,6 @@
 from flask import Blueprint, Response, jsonify, g
 from urlshortener.domain.model.user import User
-from urlshortener.aplication.services import UserService
+from urlshortener.application.services import UserService
 from urlshortener.api.utils.decorators import (
     inject_user_service,
     login_required

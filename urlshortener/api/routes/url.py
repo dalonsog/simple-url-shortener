@@ -7,7 +7,7 @@ from flask import (
     request,
     current_app
 )
-from urlshortener.aplication.services import UrlService
+from urlshortener.application.services import UrlService
 from urlshortener.domain.model.url import URL
 from urlshortener.api.utils.decorators import inject_url_service, login_required
 

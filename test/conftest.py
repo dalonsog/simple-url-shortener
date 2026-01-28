@@ -7,6 +7,11 @@ from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.infrastructure.db import db
 from urlshortener.infrastructure.db.repositories.user import UserRepository
 from urlshortener.infrastructure.db.repositories.url import UrlRepository
+from urlshortener.infrastructure.adapters import (
+    JWTTokenProvider,
+    BCryptPasswordHasher,
+    MD5UrlShortener
+)
 from urlshortener.api import register_routes, load_adapters
 
 
@@ -69,3 +74,18 @@ def flask_app() -> Flask:
 @pytest.fixture(scope='module')
 def flask_client(flask_app: Flask) -> FlaskClient:
     return flask_app.test_client()
+
+
+@pytest.fixture(scope='module')
+def jwt_token_provider() -> JWTTokenProvider:
+    return JWTTokenProvider()
+
+
+@pytest.fixture(scope='module')
+def bcrypt_password_hasher() -> BCryptPasswordHasher:
+    return BCryptPasswordHasher()
+
+
+@pytest.fixture(scope='module')
+def md5_url_shortener() -> MD5UrlShortener:
+    return MD5UrlShortener()

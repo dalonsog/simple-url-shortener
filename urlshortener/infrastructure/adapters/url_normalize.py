@@ -1,5 +1,5 @@
 from url_normalize import url_normalize
-from urlshortener.aplication.ports import UrlNormalizer
+from urlshortener.application.ports import UrlNormalizer
 
 
 class UrlNormalize(UrlNormalizer):

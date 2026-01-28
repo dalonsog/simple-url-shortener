@@ -1,7 +1,7 @@
 import string
 import hashlib
 from random import randint
-from urlshortener.aplication.ports import UrlShortener
+from urlshortener.application.ports import UrlShortener
 
 
 class MD5UrlShortener(UrlShortener):

@@ -5,8 +5,8 @@ from urlshortener.infrastructure.db.repositories.user import UserRepository
 from urlshortener.infrastructure.db.repositories.url import UrlRepository
 from urlshortener.infrastructure.cache.repositories.user import UserCache
 from urlshortener.infrastructure.cache.repositories.url import UrlCache
-from urlshortener.aplication.services import UserService, UrlService
-from urlshortener.aplication.ports import TokenProvider
+from urlshortener.application.services import UserService, UrlService
+from urlshortener.application.ports import TokenProvider
 
 
 def inject_user_service(f):

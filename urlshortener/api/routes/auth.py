@@ -1,6 +1,6 @@
 from flask import Blueprint, Response, request, jsonify, g, current_app
-from urlshortener.aplication.services import UserService
-from urlshortener.aplication.exception import NotAuthorizedException
+from urlshortener.application.services import UserService
+from urlshortener.application.exception import NotAuthorizedException
 from urlshortener.api.utils.decorators import inject_user_service
 from urlshortener.domain.model.exceptions import UserEmailAlreadyExistsException
 from urlshortener.domain.model.user import (

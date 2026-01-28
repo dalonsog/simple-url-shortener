@@ -1,11 +1,11 @@
 from passlib.context import CryptContext
-from urlshortener.aplication.ports import PasswordHasher
+from urlshortener.application.ports import PasswordHasher
 
 
 class BCryptPasswordHasher(PasswordHasher):
     _PWD_CONTEXT = CryptContext(schemes=["bcrypt"], deprecated="auto")
     
-    def verify_password(self, plain_password: str, hashed_password: str) -> str:
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         return BCryptPasswordHasher._PWD_CONTEXT.verify(
             plain_password,
             hashed_password

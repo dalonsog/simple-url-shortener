@@ -2,7 +2,7 @@ from typing import Optional, Tuple
 from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.domain.ports.repositories.url import UrlRepositoryInterface
 from urlshortener.domain.ports.services.url import UrlServiceInterface
-from urlshortener.aplication.ports import UrlNormalizer, UrlShortener
+from urlshortener.application.ports import UrlNormalizer, UrlShortener
 
 
 class UrlService(UrlServiceInterface):

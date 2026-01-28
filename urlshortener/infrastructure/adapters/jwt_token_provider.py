@@ -1,7 +1,7 @@
 import jwt
 from jwt.exceptions import InvalidTokenError
 from datetime import datetime, timedelta, timezone
-from urlshortener.aplication.ports import TokenProvider
+from urlshortener.application.ports import TokenProvider
 
 
 class JWTTokenProvider(TokenProvider):

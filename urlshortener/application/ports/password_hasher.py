@@ -3,7 +3,7 @@ from abc import abstractmethod, ABC
 
 class PasswordHasher(ABC):
     @abstractmethod
-    def verify_password(self, plain_password: str, hashed_password: str) -> str:
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
         raise NotImplementedError
     
     @abstractmethod

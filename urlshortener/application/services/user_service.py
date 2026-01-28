@@ -7,8 +7,8 @@ from urlshortener.domain.model.user import (
 )
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
 from urlshortener.domain.ports.services.user import UserServiceInterface
-from urlshortener.aplication.exception import NotAuthorizedException
-from urlshortener.aplication.ports import PasswordHasher, TokenProvider
+from urlshortener.application.exception import NotAuthorizedException
+from urlshortener.application.ports import PasswordHasher, TokenProvider
 
 
 class UserService(UserServiceInterface):
