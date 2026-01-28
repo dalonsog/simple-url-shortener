@@ -1,6 +1,7 @@
 from typing import Optional
 from urlshortener.infrastructure.db.models.user import UserDB
 from urlshortener.domain.model.user import User, user_factory
+from urlshortener.domain.model.exceptions import UserEmailAlreadyExistsException
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
 from urlshortener.domain.ports.repositories.exceptions import (
     UserDBOperationError
@@ -11,10 +12,10 @@ class UserRepository(UserRepositoryInterface):
     def __init__(self) -> None:
         pass
     
-    def _add(self, user: User) -> None:
+    def add(self, user: User) -> None:
         user_in_db = self.get_user_by_email(user_email=user.email)
         if user_in_db:
-            raise UserDBOperationError(f'User {user.email} already exists')
+            raise UserEmailAlreadyExistsException(user_email=user.email)
         
         try:
             user_db = UserDB(
@@ -27,7 +28,7 @@ class UserRepository(UserRepositoryInterface):
         except Exception as excpt:
             raise UserDBOperationError(excpt)
     
-    def _get_user_by_email(self, user_email: str) -> Optional[User]:
+    def get_user_by_email(self, user_email: str) -> Optional[User]:
         user_db: UserDB = UserDB.objects(email=user_email).first()
         if user_db:
             return user_factory(

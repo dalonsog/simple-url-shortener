@@ -11,7 +11,7 @@ class UserCache(UserRepositoryInterface):
         self._cache: Redis = get_redis_client(host, port, password)
         self._prefix = 'user'
     
-    def _add(self, user: User) -> None:
+    def add(self, user: User) -> None:
         user_in_cache = self.get_user_by_email(user.email)
         if not user_in_cache:
             self._cache.hset(
@@ -23,7 +23,7 @@ class UserCache(UserRepositoryInterface):
                 }
             )
     
-    def _get_user_by_email(self, user_email: str) -> Optional[User]:
+    def get_user_by_email(self, user_email: str) -> Optional[User]:
         user_in_cache: dict = self._cache.hgetall(
             f'{self._prefix}:{user_email}'
         )

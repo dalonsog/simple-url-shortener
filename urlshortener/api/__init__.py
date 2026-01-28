@@ -1,6 +1,12 @@
 from flask import Flask
-from urlshortener.infrastructure.db import db
 from urlshortener.api.config import Settings
+from urlshortener.infrastructure.db import db
+from urlshortener.infrastructure.adapters import (
+    UrlNormalize,
+    MD5UrlShortener,
+    BCryptPasswordHasher,
+    JWTTokenProvider
+)
 
 
 def register_routes(app: Flask) -> None:
@@ -12,6 +18,13 @@ def register_routes(app: Flask) -> None:
 
     from urlshortener.api.routes.url import bp as url_bp
     app.register_blueprint(url_bp)
+
+
+def load_adapters(app: Flask) -> None:
+    app.config['URL_NORMALIZER'] = UrlNormalize()
+    app.config['URL_SHORTENER'] = MD5UrlShortener()
+    app.config['PASSWORD_HASHER'] = BCryptPasswordHasher()
+    app.config['TOKEN_PROVIDER'] = JWTTokenProvider()
 
 
 def create_app() -> Flask:
@@ -36,5 +49,6 @@ def create_app() -> Flask:
     db.init_app(app)
 
     register_routes(app)
+    load_adapters(app)
 
     return app

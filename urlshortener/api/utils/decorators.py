@@ -5,8 +5,8 @@ from urlshortener.infrastructure.db.repositories.user import UserRepository
 from urlshortener.infrastructure.db.repositories.url import UrlRepository
 from urlshortener.infrastructure.cache.repositories.user import UserCache
 from urlshortener.infrastructure.cache.repositories.url import UrlCache
-from urlshortener.aplication.services import UserService
-from urlshortener.aplication.services import UrlService
+from urlshortener.aplication.services import UserService, UrlService
+from urlshortener.aplication.ports import TokenProvider
 
 
 def inject_user_service(f):
@@ -15,11 +15,17 @@ def inject_user_service(f):
         if current_app.config.get('REDIS_SETTINGS'):
             redis_config = current_app.config.get('REDIS_SETTINGS')
             user_service = UserService(
+                password_hasher=current_app.config.get('PASSWORD_HASHER'),
+                token_provider=current_app.config.get('TOKEN_PROVIDER'),
                 repository=UserRepository(),
                 cache=UserCache(**redis_config)
             )
         else:
-            user_service = UserService(UserRepository())
+            user_service = UserService(
+                password_hasher=current_app.config.get('PASSWORD_HASHER'),
+                token_provider=current_app.config.get('TOKEN_PROVIDER'),
+                repository=UserRepository()
+            )
             
         g.user_service = user_service
         return f(*args, **kwargs)
@@ -33,11 +39,17 @@ def inject_url_service(f):
         if current_app.config.get('REDIS_SETTINGS'):
             redis_config = current_app.config.get('REDIS_SETTINGS')
             url_service = UrlService(
+                url_normalizer=current_app.config.get('URL_NORMALIZER'),
+                url_shortener=current_app.config.get('URL_SHORTENER'),
                 repository=UrlRepository(),
                 cache=UrlCache(**redis_config)
             )
         else:
-            url_service = UrlService(UrlRepository())
+            url_service = UrlService(
+                url_normalizer=current_app.config.get('URL_NORMALIZER'),
+                url_shortener=current_app.config.get('URL_SHORTENER'),
+                repository=UrlRepository()
+            )
         
         g.url_service = url_service
         return f(*args, **kwargs)
@@ -65,7 +77,10 @@ def login_required(f):
             return no_auth_error_data
         
         try:
-            payload = UserService.get_token_payload(
+            token_provider: TokenProvider = current_app.config.get(
+                'TOKEN_PROVIDER'
+            )
+            payload = token_provider.get_token_payload(
                 token,
                 current_app.secret_key
             )

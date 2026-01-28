@@ -1,46 +1,47 @@
-import string
-import hashlib
-from random import randint
 from typing import Optional, Tuple
-from url_normalize import url_normalize
 from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.domain.ports.repositories.url import UrlRepositoryInterface
 from urlshortener.domain.ports.services.url import UrlServiceInterface
-
-
-_ALPHABET = string.digits + string.ascii_letters
+from urlshortener.aplication.ports import UrlNormalizer, UrlShortener
 
 
 class UrlService(UrlServiceInterface):
     def __init__(
         self,
+        url_normalizer: UrlNormalizer,
+        url_shortener: UrlShortener,
         repository: UrlRepositoryInterface,
-        cache: Optional[UrlRepositoryInterface] = None
+        cache: Optional[UrlRepositoryInterface] = None,
     ) -> None:
         self._repository = repository
         self._cache = cache
+        self._url_normalizer = url_normalizer
+        self._url_shortener = url_shortener
 
     def shorten_url(
         self,
         original_url: str,
-        user_email: str
+        user_email: str,
     ) -> Tuple[URL, bool]:
-        original_url = url_normalize(original_url)
+        normalized_url = self._url_normalizer.normalize_url(original_url)
         url_in_db = self._repository.get_url_by_user_origin(
             user_email,
-            original_url
+            normalized_url
         )
 
         if url_in_db:
             return url_in_db, False
         
-        url_key = UrlService.get_short_url(original_url, user_email)
+        url_key = self._url_shortener.get_short_url(normalized_url, user_email)
         while self.get_url_by_key(url_key):
-            url_key = UrlService.get_short_url(original_url, user_email)
+            url_key = self._url_shortener.get_short_url(
+                normalized_url,
+                user_email
+            )
 
         new_url = url_factory(
             short_url=url_key,
-            original_url=original_url,
+            original_url=normalized_url,
             user_email=user_email
         )
 
@@ -78,20 +79,3 @@ class UrlService(UrlServiceInterface):
             self._cache.add(url_in_db)
         
         return url_in_db
-    
-    @staticmethod
-    def get_short_url(original_url: str, username: str) -> str:
-        digest = hashlib.md5((
-            original_url + username + str(randint(10000, 50000))
-        ).encode()).hexdigest()
-        md5_int = int(digest, 16)
-        return UrlService.to_base62(md5_int)
-
-    @staticmethod
-    def to_base62(num: int, alphabet: str = _ALPHABET) -> str:
-        base = len(alphabet)
-        result = []
-        while num > 0:
-            num, rem = divmod(num, base)
-            result.append(alphabet[rem])
-        return "".join(reversed(result))[:6]

@@ -1,8 +1,8 @@
 import pytest
 from urlshortener.domain.model.user import User
 from urlshortener.domain.ports.repositories.user import UserRepositoryInterface
-from urlshortener.domain.ports.repositories.exceptions import (
-    UserDBOperationError
+from urlshortener.domain.model.exceptions import (
+    UserEmailAlreadyExistsException
 )
 
 
@@ -35,5 +35,5 @@ def test_add_duplicated_user(
     fake_user_repository: UserRepositoryInterface,
     fake_user_object: User
 ):
-    with pytest.raises(UserDBOperationError):
+    with pytest.raises(UserEmailAlreadyExistsException):
         fake_user_repository.add(fake_user_object)

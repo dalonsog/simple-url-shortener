@@ -11,7 +11,7 @@ class UrlCache(UrlRepositoryInterface):
         self._cache: Redis = get_redis_client(host, port, password)
         self._prefix = 'url'
     
-    def _add(self, url: URL) -> None:
+    def add(self, url: URL) -> None:
         url_in_cache = self.get_url_by_key(url.short_url)
         if not url_in_cache:
             self._cache.hset(
@@ -24,7 +24,7 @@ class UrlCache(UrlRepositoryInterface):
                 }
             )
     
-    def _get_url_by_key(self, url_key: str) -> Optional[URL]:
+    def get_url_by_key(self, url_key: str) -> Optional[URL]:
         url_in_cache: dict = self._cache.hgetall(f'{self._prefix}:{url_key}')
         if url_in_cache:
             return url_factory(
@@ -39,14 +39,14 @@ class UrlCache(UrlRepositoryInterface):
         else:
             return None
 
-    def _get_url_by_user_origin(
+    def get_url_by_user_origin(
         self,
         user_email: str,
         original_url: str
     ) -> Optional[URL]:
         return None
         
-    def _update_url(self, url_key: str, new_url_data: URL) -> None:
+    def update_url(self, url_key: str, new_url_data: URL) -> None:
         url_in_cache = self.get_url_by_key(url_key)
         if url_in_cache:
             self._cache.hset(

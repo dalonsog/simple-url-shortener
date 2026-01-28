@@ -1,8 +1,8 @@
 import pytest
 from urlshortener.domain.model.url import URL
 from urlshortener.domain.ports.repositories.url import UrlRepositoryInterface
-from urlshortener.domain.ports.repositories.exceptions import (
-    URLDBOperationError
+from urlshortener.domain.model.exceptions import (
+    URLKeyAlreadyExistsException
 )
 
 
@@ -35,5 +35,5 @@ def test_add_duplicated_url(
     fake_url_repository: UrlRepositoryInterface,
     fake_url_object: URL
 ):
-    with pytest.raises(URLDBOperationError):
+    with pytest.raises(URLKeyAlreadyExistsException):
         fake_url_repository.add(fake_url_object)

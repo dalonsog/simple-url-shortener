@@ -1,7 +1,11 @@
 from typing import Optional
+from urlshortener.infrastructure.db.models.url import URLDB
 from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.domain.ports.repositories.url import UrlRepositoryInterface
-from urlshortener.infrastructure.db.models.url import URLDB
+from urlshortener.domain.model.exceptions import (
+    URLKeyAlreadyExistsException,
+    URLKeyNotFoundException
+)
 from urlshortener.domain.ports.repositories.exceptions import (
     URLDBOperationError
 )
@@ -11,12 +15,10 @@ class UrlRepository(UrlRepositoryInterface):
     def __init__(self) -> None:
         pass
     
-    def _add(self, url: URL) -> None:
+    def add(self, url: URL) -> None:
         url_in_db = self.get_url_by_key(url_key=url.short_url)
         if url_in_db:
-            raise URLDBOperationError(
-                f'URL key {url.short_url} already exists'
-            )
+            raise URLKeyAlreadyExistsException(url_key=url.short_url)
         
         try:
             url_db = URLDB(
@@ -29,7 +31,7 @@ class UrlRepository(UrlRepositoryInterface):
         except Exception as excpt:
             raise URLDBOperationError(excpt)
     
-    def _get_url_by_key(self, url_key: str) -> Optional[URL]:
+    def get_url_by_key(self, url_key: str) -> Optional[URL]:
         url_db: URLDB = URLDB.objects(short_url=url_key).first()
         if url_db:
             return url_factory(
@@ -42,7 +44,7 @@ class UrlRepository(UrlRepositoryInterface):
         else:
             return None
 
-    def _get_url_by_user_origin(
+    def get_url_by_user_origin(
         self,
         user_email: str,
         original_url: str
@@ -62,12 +64,10 @@ class UrlRepository(UrlRepositoryInterface):
         else:
             return None
         
-    def _update_url(self, url_key: str, new_url_data: URL) -> None:
+    def update_url(self, url_key: str, new_url_data: URL) -> None:
         url_in_db: URLDB = URLDB.objects(short_url=url_key).first()
         if not url_in_db:
-            raise URLDBOperationError(
-                f'URL key {url_key} not found'
-            )
+            raise URLKeyNotFoundException(url_key=url_key)
         
         url_in_db.clicks = new_url_data.clicks
         try:

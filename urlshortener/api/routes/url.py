@@ -7,9 +7,8 @@ from flask import (
     request,
     current_app
 )
-from url_normalize import url_normalize
 from urlshortener.aplication.services import UrlService
-from urlshortener.domain.model.url import URL, CreateUrlDto, create_url_factory
+from urlshortener.domain.model.url import URL
 from urlshortener.api.utils.decorators import inject_url_service, login_required
 
 
@@ -40,9 +39,7 @@ def shorten_url() -> Response:
     if not original_url:
         return jsonify({'error': 'URL not found in request'}), 400
 
-    original_url = url_normalize(original_url)
     user_email: str = g.current_user.get('user_email')
-    
     url_service: UrlService = g.url_service
     try:
         url_in_db, created = url_service.shorten_url(original_url, user_email)
@@ -53,8 +50,8 @@ def shorten_url() -> Response:
                 f'{url_in_db.short_url}'
             )
         }), 201 if created else 200
-    except:
-        return jsonify({'error': 'Error creating short url'}), 500
+    except Exception as err:
+        return jsonify({'error': f'Error creating short url: {err}'}), 500
 
 
 @bp.route('/inspect/<string:url>', methods=['GET'])

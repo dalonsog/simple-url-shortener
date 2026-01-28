@@ -7,7 +7,7 @@ from urlshortener.domain.model.url import URL, url_factory
 from urlshortener.infrastructure.db import db
 from urlshortener.infrastructure.db.repositories.user import UserRepository
 from urlshortener.infrastructure.db.repositories.url import UrlRepository
-from urlshortener.api import register_routes
+from urlshortener.api import register_routes, load_adapters
 
 
 def init_mock_db(app: Flask):
@@ -61,6 +61,7 @@ def flask_app() -> Flask:
     init_mock_db(app)
     
     register_routes(app)
+    load_adapters(app)
 
     return app
 

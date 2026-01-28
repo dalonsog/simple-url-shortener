@@ -1,13 +1,13 @@
 from flask import Blueprint, Response, request, jsonify, g, current_app
+from urlshortener.aplication.services import UserService
+from urlshortener.aplication.exception import NotAuthorizedException
+from urlshortener.api.utils.decorators import inject_user_service
+from urlshortener.domain.model.exceptions import UserEmailAlreadyExistsException
 from urlshortener.domain.model.user import (
-    User,
     RegisterUserInputDto,
     RegisterUserOutputDto,
     register_user_factory
 )
-from urlshortener.aplication.services import UserService
-from urlshortener.aplication.exception import NotAuthorizedException
-from urlshortener.api.utils.decorators import inject_user_service
 
 
 bp = Blueprint('auth', __name__)
@@ -45,7 +45,11 @@ def signup() -> Response:
     user_service: UserService = g.user_service
     try:
         new_user: RegisterUserOutputDto = user_service.create_user(user_input)
-    except Exception:
-        return jsonify({'error': 'Input email already exists'}), 409
+    except UserEmailAlreadyExistsException as excpt:
+        return jsonify({
+            'error': f'Input email {excpt.user_email} already exists'
+        }), 409
+    except Exception as err:
+        return jsonify({'error': f'Unexpected error: {err}'}), 500
     
     return jsonify({'email': new_user.email, 'name': new_user.name}), 201
